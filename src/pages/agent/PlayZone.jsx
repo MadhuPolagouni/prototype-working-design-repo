@@ -22,6 +22,7 @@ import {
 import { cn } from "../../lib/utils";
 import EliteSpinWheel from "../../components/game/EliteSpinWheel";
 import SpinWheelModal from "../../components/game/SpinWheelModal";
+import SpinWheelNew from "../../components/game/SpinWheelNew";
 import ScratchCardRevealModal from "../../components/game/ScratchCardRevealModal";
 import SpinWheelBanner from "../../components/game/SpinWheelBanner";
 import WeeklyChallenges from "../../components/game/WeeklyChallenges";
@@ -132,16 +133,32 @@ const PlayZone = () => {
     }
   }, [actions, refetch]);
 
+  const [acceptedChallengeIds, setAcceptedChallengeIds] = useState([]);
+
   const handleAcceptChallenge = useCallback((challengeId) => {
     console.log("Challenge accepted:", challengeId);
-    // This now gets called by WeeklyChallenges component when user clicks Accept
+    setAcceptedChallengeIds(prev => {
+      if (!prev.includes(challengeId)) {
+        return [...prev, challengeId];
+      }
+      return prev;
+    });
   }, []);
 
   const handleAcceptAllChallenges = useCallback(() => {
-    // Accept all challenges at once
-    console.log("All challenges accepted");
-    // This will trigger the challenge acceptance flow in WeeklyChallenges component
-  }, []);
+    // Accept all weekly challenges at once
+    if (data?.weeklyChallenges && data.weeklyChallenges.length > 0) {
+      const allChallengeIds = data.weeklyChallenges.map(c => c.id);
+      setAcceptedChallengeIds(allChallengeIds);
+      
+      // Trigger onAcceptChallenge for each challenge
+      allChallengeIds.forEach(id => {
+        console.log("Accepting challenge:", id);
+      });
+      
+      console.log("All challenges accepted:", allChallengeIds);
+    }
+  }, [data?.weeklyChallenges]);
 
   const handleClaimChallengeReward = useCallback((challengeId, tokens) => {
     setTokenBalance(prev => prev + tokens);
@@ -152,15 +169,17 @@ const PlayZone = () => {
   if (loading) return <PlayzoneSkeleton />;
 
   const activeStreak = data?.streak || 7;
-  const totalPoints = data?.totalPoints || 12450;
-  const totalXPS = data?.totalXPS || 8500;
+  const totalPoints = data?.totalPoints || 0;
+  const totalXPS = data?.totalXPS || 0;
   const scratchReward = data?.scratchReward || "+500 PTS";
   const tokensNeeded = data?.tokensNeeded || 250; // Updated to 250 points for spin wheel unlock
   const weeklyChallenges = data?.weeklyChallenges || [];
   const transformedWeeklyChallenges = weeklyChallenges.map(challenge => ({
     id: challenge.id,
     title: challenge.title,
-    description: `${challenge.title}: ${challenge.value} / ${challenge.target}`,
+    description: challenge.value !== undefined && challenge.target !== undefined 
+      ? `${challenge.title}: ${challenge.value} / ${challenge.target}`
+      : "Challenge Locked",
     tokens: challenge.reward,
     icon: Target, // or based on type
     metric: challenge.title.split(' ')[0], // e.g., "NRPC"
@@ -216,19 +235,33 @@ const PlayZone = () => {
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-wrap items-center justify-between gap-3"
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/30">
-              <Crosshair className="w-5 h-5 text-white" />
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/30">
+                <Crosshair className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                <div>
+                  <h1 className="text-lg lg:text-xl font-display text-foreground tracking-wider">
+                    BATTLE CONSOLE
+                  </h1>
+                  <p className="text-[10px] font-oxanium text-muted-foreground tracking-wider">
+                    <span className="text-secondary">&gt;</span> Execute missions. Claim rewards.
+                  </p>
+                </div>
+                
+                {/* Synced XP and Points beside Title */}
+                <div className="hidden md:flex items-center gap-3 pl-4 border-l border-border/50">
+                  <div className="flex items-center gap-1.5">
+                    <Zap className="w-3.5 h-3.5 text-primary" />
+                    <span className="text-xs font-display text-primary">{Math.round(totalXPS).toLocaleString()} XP</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Star className="w-3.5 h-3.5 text-accent" />
+                    <span className="text-xs font-display text-accent">{Math.round(totalPoints).toLocaleString()} PTS</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <h1 className="text-lg lg:text-xl font-display text-foreground tracking-wider">
-                BATTLE CONSOLE
-              </h1>
-              <p className="text-[10px] font-oxanium text-muted-foreground tracking-wider">
-                <span className="text-secondary">&gt;</span> Execute missions. Claim rewards.
-              </p>
-            </div>
-          </div>
 
           {/* Status Bar */}
           <div className="flex items-center gap-2">
@@ -294,6 +327,7 @@ const PlayZone = () => {
                 weekRange={weekRange}
                 onAcceptChallenge={handleAcceptChallenge}
                 onClaimReward={handleClaimChallengeReward}
+                acceptedChallengesFromParent={acceptedChallengeIds}
               />
             </div>
           </motion.div>
@@ -335,8 +369,8 @@ const PlayZone = () => {
         currentBalance={currentPoints}
       />
 
-      {/* Spin Wheel Modal with Token Deduction */}
-      <SpinWheelModal
+      {/* Spin Wheel Modal with Token Deduction - New Enhanced Wheel */}
+      <SpinWheelNew
         isOpen={showWheelModal}
         onClose={() => setShowWheelModal(false)}
         onSpin={handleSpinWheel}
@@ -344,6 +378,7 @@ const PlayZone = () => {
         tokenBalance={tokenBalance}
         tokenCost={tokensNeeded}
         currentPoints={currentPoints}
+        onClaimSuccess={() => refetch()}
       />
     </div>
   );

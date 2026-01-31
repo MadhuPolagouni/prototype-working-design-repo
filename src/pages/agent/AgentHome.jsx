@@ -6,6 +6,7 @@ import { useAgentDashboard } from "./hooks.jsx";
 import { AgentDashboardSkeleton } from "../../components/ui/PageSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import ContestBanner from "@/components/game/ContestBanner";
+// ProductionReport and RewardsGallery removed from Agent overview per design
 
 const AgentHome = () => {
   const { data, loading, error } = useAgentDashboard();
@@ -244,14 +245,17 @@ const AgentHome = () => {
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-wrap items-center justify-between gap-6"
         >
-          <div>
-            <h1 className="text-3xl lg:text-4xl font-bold tracking-tight mb-1" style={{ fontFamily: "'Sora', sans-serif", background: "linear-gradient(135deg, hsl(var(--foreground)) 0%, hsl(var(--primary)) 50%, hsl(var(--secondary)) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-              Command Center
-            </h1>
-            <p className="text-sm text-muted-foreground font-mono">
-              <span className="text-secondary">&gt;</span> Your daily performance hub
-            </p>
-          </div>
+            <div className="flex items-center gap-3">
+              
+              <div>
+                <h1 className="text-3xl lg:text-4xl font-bold tracking-tight mb-1" style={{ fontFamily: "'Sora', sans-serif", background: "linear-gradient(135deg, hsl(var(--foreground)) 0%, hsl(var(--primary)) 50%, hsl(var(--secondary)) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                  Command Center
+                </h1>
+                <p className="text-sm text-muted-foreground font-mono">
+                  <span className="text-secondary">&gt;</span> Your daily performance hub
+                </p>
+              </div>
+            </div>
           <div className="flex items-center gap-4">
             {/* Streak Badge */}
             <motion.div whileHover={{ scale: 1.05 }} className="flex flex-col items-center px-4 py-2 rounded-xl glass-card border border-warning/50" style={{ boxShadow: "0 0 20px hsl(var(--warning) / 0.2)" }}>
@@ -267,6 +271,7 @@ const AgentHome = () => {
               <span className="font-bold text-lg text-secondary font-mono">{formatTime(countdown.hours)}:{formatTime(countdown.minutes)}:{formatTime(countdown.seconds)}</span>
             </div>
           </div>
+          <div className="ml-4" />
         </motion.header>
 
         {/* ═══════════════════════════════════════════════════════════════════
@@ -302,7 +307,7 @@ const AgentHome = () => {
               </div>
               <div className="flex items-center gap-2">
                 {/* View Last 5 Days Button */}
-                <motion.button
+                {/* <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleFetchLast5Days}
@@ -320,7 +325,7 @@ const AgentHome = () => {
                       Last 5 Days
                     </>
                   )}
-                </motion.button>
+                </motion.button> */}
                 {/* Bonus Reward */}
                 <div className={cn("px-4 py-2 rounded-xl border flex items-center gap-2", allMissionsComplete ? "bg-success/20 border-success/40" : "bg-warning/10 border-warning/30")}>
                   <Gift className={cn("w-5 h-5", allMissionsComplete ? "text-success" : "text-warning")} />
@@ -406,6 +411,8 @@ const AgentHome = () => {
               })}
             </div>
 
+            {/* ProductionReport and RewardsGallery removed from Agent overview per design */}
+
             {/* Overall Progress Bar */}
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
@@ -465,7 +472,7 @@ const AgentHome = () => {
               >
                 <div className="flex items-center gap-2">
                   <Activity className="w-4 h-4 text-primary" />
-                  <span className="font-semibold text-foreground">Today's KPI Metrics</span>
+                  <span className="font-semibold text-foreground">Last 5 Days  Metrics</span>
                 </div>
                 <motion.div
                   animate={{ rotate: showExpandedKPIs ? 180 : 0 }}
@@ -478,115 +485,121 @@ const AgentHome = () => {
               {/* Expanded KPI Content */}
               <AnimatePresence>
                 {showExpandedKPIs && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="mt-3 space-y-2"
-                  >
-                    {/* Today's KPI row */}
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-bold text-foreground px-4">Today</h4>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-                        {[
-                          { name: 'New Revenue', value: kpiHistoryData[0].new_revenue, target: kpiTargets.new_revenue, unit: '$' },
-                          { name: 'AHT', value: kpiHistoryData[0].aht, target: kpiTargets.aht, unit: 'min' },
-                          { name: 'QA Score', value: kpiHistoryData[0].qa_score, target: kpiTargets.qa_score, unit: '%' },
-                          { name: 'NRPC', value: kpiHistoryData[0].nrpc, target: kpiTargets.nrpc, unit: '$' },
-                          { name: 'Conv%', value: kpiHistoryData[0].new_conv_pct, target: kpiTargets.new_conv_pct, unit: '%' },
-                          { name: 'NPS', value: kpiHistoryData[0].nps, target: kpiTargets.nps, unit: '' }
-                        ].map((kpi) => {
-                          const achieved = kpi.name === 'AHT' ? kpi.value <= kpi.target : kpi.value >= kpi.target;
-                          const percentage = kpi.name === 'AHT' 
-                            ? Math.min((kpi.target / kpi.value) * 100, 100)
-                            : Math.min((kpi.value / kpi.target) * 100, 100);
-                          return (
-                            <motion.div
-                              key={kpi.name}
-                              className={cn(
-                                "p-3 rounded-lg border text-center",
-                                achieved ? "bg-success/15 border-success/40" : "bg-muted/30 border-border/50"
-                              )}
-                            >
-                              <p className="text-xs text-muted-foreground mb-1">{kpi.name}</p>
-                              <p className={cn("text-sm font-bold", achieved ? "text-success" : "text-foreground")}>
-                                {kpi.value}{kpi.unit}
-                              </p>
-                              <p className="text-xs text-muted-foreground">Target: {kpi.target}{kpi.unit}</p>
-                              <div className="h-1 bg-muted rounded mt-1 overflow-hidden">
-                                <motion.div
-                                  className={cn("h-full rounded", achieved ? "bg-success" : "bg-primary")}
-                                  initial={{ width: 0 }}
-                                  animate={{ width: `${percentage}%` }}
-                                  transition={{ duration: 0.5 }}
-                                />
-                              </div>
-                            </motion.div>
-                          );
-                        })}
-                      </div>
-                      <div className="flex items-center gap-2 px-4 text-xs">
-                        <span className="text-muted-foreground">XPS: {kpiHistoryData[0].xps}/10</span>
-                        {kpiHistoryData[0].scratch && <Gift className="w-3 h-3 text-warning" />}
-                      </div>
-                    </div>
+              <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-4"
+            >
+              
+              {/* KPI Rows */}
+              <div className="kpi-timeline">
+  {kpiHistoryData.map((day, idx) => {
+    const prev = kpiHistoryData[idx + 1];
+    const trend = prev ? day.new_revenue - prev.new_revenue : 0;
+    const progress = Math.min((day.xps / 10) * 100, 100);
 
-                    {/* Last 4 days - Horizontal scrollable */}
-                    <div className="space-y-2 mt-4">
-                      <h4 className="text-sm font-bold text-foreground px-4">Last 4 Days</h4>
-                      <div className="overflow-x-auto px-4 pb-2">
-                        <div className="flex gap-3 min-w-min">
-                          {kpiHistoryData.slice(1).map((day, idx) => (
-                            <motion.div
-                              key={idx}
-                              initial={{ opacity: 0, x: 20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: idx * 0.1 }}
-                              className="min-w-[200px] p-3 rounded-lg bg-muted/20 border border-border/40"
-                            >
-                              <p className="text-xs font-semibold text-foreground mb-2">{day.date}</p>
-                              <div className="space-y-1 text-xs">
-                                <div className="flex justify-between">
-                                  <span className="text-muted-foreground">Revenue:</span>
-                                  <span className="font-bold">${day.new_revenue}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-muted-foreground">AHT:</span>
-                                  <span className="font-bold">{day.aht}min</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-muted-foreground">QA:</span>
-                                  <span className="font-bold">{day.qa_score}%</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-muted-foreground">NRPC:</span>
-                                  <span className="font-bold">${day.nrpc}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-muted-foreground">Conv%:</span>
-                                  <span className="font-bold">{day.new_conv_pct}%</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-muted-foreground">NPS:</span>
-                                  <span className="font-bold">{day.nps}</span>
-                                </div>
-                                <div className="flex justify-between pt-1 border-t border-border/30">
-                                  <span className="text-muted-foreground">XPS:</span>
-                                  <span className="font-bold">{day.xps}/10</span>
-                                </div>
-                                {day.scratch && (
-                                  <div className="flex items-center gap-1 text-accent pt-1">
-                                    <Gift className="w-3 h-3" />
-                                    <span className="text-xs">Scratch earned</span>
-                                  </div>
-                                )}
-                              </div>
-                            </motion.div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
+    return (
+      <motion.div
+        key={day.date}
+        initial={{ opacity: 0, x: -30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: idx * 0.08 }}
+        className="kpi-timeline-row"
+      >
+        {/* Timeline rail */}
+        <div className="timeline-rail">
+          <div className={`timeline-dot ${day.xps >= 8 ? "active" : ""}`} />
+          {idx !== kpiHistoryData.length - 1 && <div className="timeline-line" />}
+        </div>
+
+        {/* KPI Card */}
+        <div className="kpi-rail-card">
+  {/* MAIN CONTENT */}
+  <div className="kpi-rail-main">
+    {/* Header */}
+    <div className="kpi-header">
+      <span className="day">{day.date}</span>
+    </div>
+
+    {/* KPI values */}
+    <div className="kpi-values">
+    <div className="kpi-metric">
+  <span className="kpi-label">Revenue</span>
+
+  <div className="kpi-value-row">
+    <strong>${day.new_revenue}</strong>
+    <span className="kpi-target">
+      / ${kpiTargets.new_revenue}
+    </span>
+  </div>
+</div>
+
+<div className="kpi-metric">
+  <span className="kpi-label">AHT</span>
+  <div className="kpi-value-row">
+    <strong>{day.aht}m</strong>
+    <span className="kpi-target">
+      / {kpiTargets.aht}m
+    </span>
+  </div>
+</div>
+
+<div className="kpi-metric">
+  <span className="kpi-label">QA</span>
+  <div className="kpi-value-row">
+    <strong>{day.qa_score}%</strong>
+    <span className="kpi-target">
+      / {kpiTargets.qa_score}%
+    </span>
+  </div>
+</div>
+
+<div className="kpi-metric">
+  <span className="kpi-label">NPS</span>
+  <div className="kpi-value-row">
+    <strong>{day.nps}</strong>
+    <span className="kpi-target">
+      / {kpiTargets.nps}
+    </span>
+  </div>
+</div>
+
+    </div>
+
+    {/* XP + Progress */}
+    <div className="kpi-footer">
+      <div className="xp-pulse">⚡ {day.xps}/10 XP</div>
+
+      <div className="progress-track">
+        <motion.div
+          className="progress-fill"
+          initial={{ width: 0 }}
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 0.8 }}
+        />
+      </div>
+    </div>
+  </div>
+
+  {/* RIGHT SIDE FIXED RAIL */}
+  <div className="kpi-rail-side">
+  <span className={`trend ${trend >= 0 ? "up" : "down"}`}>
+  {trend >= 0 ? "▲" : "▼"} {Math.abs(trend)} points
+</span>
+
+
+    {day.scratch && <span className="reward">🎁</span>}
+  </div>
+</div>
+
+      </motion.div>
+    );
+  })}
+</div>
+
+            </motion.div>
+            
                 )}
               </AnimatePresence>
             </motion.div>
@@ -633,14 +646,14 @@ const AgentHome = () => {
             <div className="flex-1 min-w-[200px]">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm text-muted-foreground">Unlock Progress</span>
-                <span className="text-sm font-bold text-primary">{data.spinUnlockProgress}%</span>
+                <span className="text-sm font-bold text-primary">90%</span>
               </div>
               <div className="h-3 bg-muted rounded-full overflow-hidden">
                 <motion.div 
                   className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 rounded-full"
                   style={{ boxShadow: "0 0 10px hsla(280,100%,60%,0.5)" }}
                   initial={{ width: 0 }}
-                  animate={{ width: `${data.spinUnlockProgress}%` }}
+                  animate={{ width: `90%` }}
                   transition={{ duration: 1, ease: "easeOut" }}
                 />
               </div>
@@ -835,7 +848,7 @@ const AgentHome = () => {
                     {data.leaderboard[1].avatar}
                   </div>
                   <span className="text-xs text-muted-foreground mt-1 font-medium">{data.leaderboard[1].name}</span>
-                  <span className="text-xs text-muted-foreground">{data.leaderboard[1].points.toLocaleString()}</span>
+                  <span className="text-xs text-muted-foreground">{Math.floor((data.leaderboard[1].points || 0) / 10).toLocaleString()} XPS</span>
                   <div className="w-14 h-14 mt-2 rounded-t-lg bg-gradient-to-b from-gray-400/40 to-gray-600/40 flex items-center justify-center text-2xl font-bold text-gray-400 border-t border-x border-gray-400/30">2</div>
                 </motion.div>
               )}
@@ -849,7 +862,7 @@ const AgentHome = () => {
                     <div className="absolute -top-2 left-1/2 -translate-x-1/2"><span className="text-xl">👑</span></div>
                   </div>
                   <span className="text-sm font-semibold text-accent mt-2">{data.leaderboard[0].name}</span>
-                  <span className="text-xs text-accent">{data.leaderboard[0].points.toLocaleString()}</span>
+                  <span className="text-xs text-accent">{Math.floor((data.leaderboard[0].points || 0) / 10).toLocaleString()} XPS</span>
                   <div className="w-16 h-20 mt-2 rounded-t-lg bg-gradient-to-b from-yellow-500/40 to-yellow-700/40 flex items-center justify-center text-3xl font-bold text-accent border-t border-x border-yellow-500/40">1</div>
                 </motion.div>
               )}
@@ -860,7 +873,7 @@ const AgentHome = () => {
                     {data.leaderboard[2].avatar}
                   </div>
                   <span className="text-xs text-muted-foreground mt-1 font-medium">{data.leaderboard[2].name}</span>
-                  <span className="text-xs text-muted-foreground">{data.leaderboard[2].points.toLocaleString()}</span>
+                  <span className="text-xs text-muted-foreground">{Math.floor((data.leaderboard[2].points || 0) / 10).toLocaleString()} XPS</span>
                   <div className="w-14 h-10 mt-2 rounded-t-lg bg-gradient-to-b from-amber-600/40 to-amber-800/40 flex items-center justify-center text-2xl font-bold text-amber-500 border-t border-x border-amber-600/30">3</div>
                 </motion.div>
               )}
@@ -884,7 +897,7 @@ const AgentHome = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-lg text-primary">{data.currentUser.points.toLocaleString()} pts</p>
+                  <p className="font-bold text-lg text-primary">{Math.floor((data.currentUser.points || 0) / 10).toLocaleString()} XPS</p>
                   <p className="text-xs text-success flex items-center justify-end gap-1">
                     <TrendingUp className="w-3 h-3" /> Climbing!
                   </p>
@@ -962,15 +975,248 @@ const AgentHome = () => {
         </div>
 
         {/* Shimmer animation style */}
-      <style>{`
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-        .animate-shimmer {
-          animation: shimmer 2s infinite;
-        }
-      `}</style>
+     {/* Shimmer + KPI styles */}
+     <style>{`
+  /* ===== Shimmer animation ===== */
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+  
+  /* ===== KPI TIMELINE RAIL ===== */
+  
+  .kpi-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding: 20px 10px;
+  }
+  
+  /* Timeline row */
+  .kpi-timeline-row {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 16px;
+  }
+  
+  /* Timeline rail */
+  .timeline-rail {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .timeline-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: hsl(var(--muted));
+    border: 2px solid hsl(var(--border));
+  }
+  
+  .timeline-dot.active {
+    background: hsl(var(--accent));
+    box-shadow: 0 0 20px hsl(var(--accent));
+  }
+  
+  .timeline-line {
+    width: 2px;
+    flex: 1;
+    margin-top: 6px;
+    background: linear-gradient(
+      to bottom,
+      hsl(var(--border)),
+      transparent
+    );
+  }
+  
+  /* ===== KPI CARD (FIXED STRUCTURE) ===== */
+  
+  .kpi-rail-card {
+    display: grid;
+    grid-template-columns: 1fr 70px; /* main + right rail */
+    gap: 16px;
+    align-items: center;
+  
+    padding: 18px 20px;
+    border-radius: 20px;
+  
+    background:
+      radial-gradient(
+        120% 120% at 0% 0%,
+        hsl(var(--primary) / 0.18),
+        transparent 45%
+      ),
+      linear-gradient(
+        135deg,
+        hsl(var(--card)),
+        hsl(var(--muted))
+      );
+  
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 20px 60px hsl(var(--foreground) / 0.18);
+    transition: transform 0.3s ease;
+  }
+  
+  .kpi-rail-card:hover {
+    transform: translateY(-4px);
+  }
+  
+  /* ===== MAIN CONTENT ===== */
+  
+  .kpi-rail-main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+  }
+  
+  /* Header */
+  .kpi-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  
+  .kpi-header .day {
+    font-size: 14px;
+    font-weight: 900;
+  }
+  
+  /* KPI values */
+  .kpi-values {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .kpi-values span {
+    font-size: 10px;
+    color: hsl(var(--muted-foreground));
+  }
+  
+  .kpi-values strong {
+    font-size: 15px;
+    font-weight: 800;
+  }
+  
+  /* Footer */
+  .kpi-footer {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    align-items: center;
+  }
+  
+  /* XP pulse */
+  .xp-pulse {
+    font-weight: 900;
+    color: hsl(var(--accent));
+    animation: pulseXP 1.6s infinite;
+  }
+  
+  @keyframes pulseXP {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+  
+  /* Progress bar */
+  .progress-track {
+    width: 100%;
+    height: 6px;
+    background: hsl(var(--muted));
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(
+      to right,
+      hsl(var(--primary)),
+      hsl(var(--accent))
+    );
+  }
+  
+  /* ===== RIGHT RAIL (CONTENT END FIX) ===== */
+  
+  .kpi-rail-side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .kpi-rail-side .trend {
+    font-size: 11px;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+  
+  .trend.up {
+    color: hsl(var(--success));
+  }
+  
+  .trend.down {
+    color: hsl(var(--destructive));
+  }
+  
+  /* Reward */
+  .reward {
+    font-size: 16px;
+    filter: drop-shadow(0 0 10px hsl(var(--warning)));
+  }
+  
+  /* ===== KPI METRIC SPACING + TARGET ===== */
+
+  .kpi-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 6px; /* space between label and value */
+  }
+  
+  /* Metric name */
+  .kpi-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: hsl(var(--muted-foreground));
+    letter-spacing: 0.04em;
+  }
+  
+  /* Value + target row */
+  .kpi-value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px; /* space between value & target */
+  }
+  
+  /* Main value */
+  .kpi-value-row strong {
+    font-size: 16px;
+    font-weight: 900;
+    color: hsl(var(--foreground));
+  }
+  
+  /* Target text */
+  .kpi-target {
+    font-size: 11px;
+    font-weight: 600;
+    color: hsl(var(--muted-foreground));
+  }
+  
+
+`}</style>
+
 
       {/* Last 5 Days Performance Modal */}
       <AnimatePresence>

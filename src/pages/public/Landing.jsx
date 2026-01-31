@@ -8,6 +8,11 @@ import GamifiedBackground from "@/components/effects/GamifiedBackground";
 import vrGamerHero from "@/assets/vr-gamer-hero.png";
 import warriorKnight3d from "@/assets/warrior-knight-3d.png";
 import goldenTrophy3d from "@/assets/golden-trophy-3d.png";
+import genpactLogo from "@/assets/logogenpactt.png";
+import siteLogo from "@/assets/site-logo.png"
+import godaddyLogo from "@/assets/logogodaddy.png";
+import ProductionReport from '@/components/ui/ProductionReport';
+import RewardsGallery from '@/components/ui/RewardsGallery';
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -124,9 +129,20 @@ const Landing = () => {
       />
 
       {/* Navigation */}
-      <nav className="relative z-50 flex items-center justify-between px-4 sm:px-6 lg:px-12 py-3 sm:py-4 border-b border-border/20 backdrop-blur-sm">
+      <nav className="relative z-50 flex items-center justify-between px-4 sm:px-6 lg:px-12 py-3 border-b border-border/20 backdrop-blur-sm">
+
+
+
+
+      <div className="flex items-center gap-3">
+              {/* Genpact next to brand */}
+              <img src={genpactLogo} 
+               alt="Genpact" 
+              className="h-21 w-60 object-contain" />
+            </div>
+        
         <motion.div 
-          className="flex items-center gap-2 sm:gap-3"
+          className="flex items-center gap-1 sm:gap-3"
           whileHover={{ scale: 1.02 }}
         >
           <div className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-[0_0_25px_hsla(280,100%,60%,0.5)]">
@@ -141,41 +157,37 @@ const Landing = () => {
           <span className="font-display font-bold text-lg sm:text-xl text-foreground tracking-wide">
             ga<span className="text-primary">ME</span>trix
           </span>
+          
+          
         </motion.div>
 
-        <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-muted-foreground">
-          <button onClick={() => navigate('/login')} className="hover:text-primary transition-colors flex items-center gap-1.5">
-            <Trophy className="w-4 h-4" /> Leaderboard
-          </button>
-          <button onClick={() => navigate('/login')} className="hover:text-primary transition-colors flex items-center gap-1.5">
-            <Gift className="w-4 h-4" /> Rewards
-          </button>
-          <button onClick={() => navigate('/login')} className="hover:text-primary transition-colors flex items-center gap-1.5">
-            <Target className="w-4 h-4" /> Contests
-          </button>
-        </div>
+       
+         {/* <motion.div
+  className="flex items-center gap-3 cursor-pointer"
+  whileHover={{ scale: 1.03 }}
+  whileTap={{ scale: 0.98 }}
+>
+  <img
+    src={siteLogo}
+    alt="gaMEtrix"
+    className="h-30  w-55 rounded-lg"
+  />
+</motion.div> */}
 
-        <div className="flex items-center gap-2 sm:gap-3">
-          <button 
-            onClick={() => navigate('/login')}
-            className="hidden sm:block px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Log In
-          </button>
-          <motion.button
-            onClick={handleEnterArena}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-primary to-pink-600 text-white font-bold text-xs sm:text-sm shadow-[0_0_25px_hsla(320,100%,55%,0.4)] hover:shadow-[0_0_35px_hsla(320,100%,55%,0.6)] transition-shadow"
-          >
-            PLAY NOW
-          </motion.button>
-        </div>
+        
+        <div className="flex items-center ">
+              <img src={godaddyLogo}
+
+              alt="GoDaddy"  className="h-15 w-60 object-contain"  />
+            </div>
+        
       </nav>
+         
 
       {/* Hero Section */}
       <section className="relative z-10 min-h-[90vh] sm:min-h-[85vh] flex items-center">
-        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-12 py-8 sm:py-12">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-12 pt-2 sm:pt-4 pb-8">
+
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left Content */}
             <div className="max-w-2xl">
@@ -241,25 +253,11 @@ const Landing = () => {
                   <span>START PLAYING</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.02, borderColor: "hsl(var(--primary))" }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex items-center justify-center gap-3 px-6 py-3.5 sm:py-4 rounded-xl border-2 border-border text-foreground font-semibold hover:bg-primary/10 transition-all"
-                >
-                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                    <Play className="w-4 h-4 text-primary ml-0.5" fill="currentColor" />
-                  </div>
-                  <span>WATCH TRAILER</span>
-                </motion.button>
-              </motion.div>
-
-              {/* Timer */}
-              <motion.div
+                <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="mt-6 sm:mt-8 inline-flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-3 rounded-xl bg-warning/10 border border-warning/30"
+                className="mt-5 sm:mt-8 inline-flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-3 rounded-xl bg-warning/10 border border-warning/30"
               >
                 <Flame className="w-5 h-5 text-warning animate-pulse" />
                 <div>
@@ -269,6 +267,10 @@ const Landing = () => {
                   </p>
                 </div>
               </motion.div>
+              </motion.div>
+
+              {/* Timer */}
+              
             </div>
 
             {/* Right Side - VR Gamer Hero with Battle Effects */}
@@ -424,6 +426,8 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* Production report removed from Landing — moved into Agent Performance (agent-only) */}
+
       {/* Stats Bar */}
       <section className="relative z-20 -mt-8 sm:-mt-12 mx-4 sm:mx-6 lg:mx-12 mb-8 sm:mb-12">
         <motion.div 
@@ -516,6 +520,8 @@ const Landing = () => {
           </div>
         </div>
       </section>
+
+      {/* Rewards Gallery removed from Landing — viewable from Agent Rewards Gallery page */}
 
       {/* Compact Leaderboard Preview */}
       <section className="relative z-10 py-12 sm:py-16 lg:py-24 border-t border-border/30">

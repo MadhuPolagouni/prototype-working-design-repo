@@ -56,7 +56,7 @@ const ManagerOverview = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div className="flex flex lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-foreground" style={{ fontFamily: "'Sora', sans-serif" }}>
             Strategic Overview
@@ -75,34 +75,28 @@ const ManagerOverview = () => {
         {/* Left Column */}
         <div className="space-y-6">
           {/* Key Metrics Row */}
-          <div className="grid sm:grid-cols-3 gap-4">
-            {/* Team Health Score */}
+          <div className="grid sm:grid-cols-2 gap-4">
+            {/* Team XPS */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
               className="p-5 rounded-xl glass-card border border-border/50"
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="text-xs text-muted-foreground uppercase tracking-wider">Team Health Score</span>
-                <div className="w-8 h-8 rounded-lg bg-success/20 flex items-center justify-center">
-                  <Target className="w-4 h-4 text-success" />
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">Team XPS</span>
+                <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                  <Zap className="w-4 h-4 text-primary" />
                 </div>
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-foreground" style={{ fontFamily: "'Sora', sans-serif" }}>{Math.min(100, Math.round(data.teamHealthScore % 100 || data.teamHealthScore))}</span>
-                <span className="text-lg text-muted-foreground">/100</span>
-              </div>
-              <div className="flex items-center gap-2 mt-2">
-                {data.teamHealthChange >= 0 ? (
-                  <TrendingUp className="w-4 h-4 text-success" />
-                ) : (
-                  <TrendingDown className="w-4 h-4 text-destructive" />
-                )}
-                <span className={`text-sm ${data.teamHealthChange >= 0 ? 'text-success' : 'text-destructive'}`}>
-                  {data.teamHealthChange >= 0 ? '+' : ''}{data.teamHealthChange}%
-                </span>
-                <span className="text-xs text-muted-foreground">vs. previous period</span>
-              </div>
+                  <span className="text-3xl font-bold text-foreground" style={{ fontFamily: "'Sora', sans-serif" }}>
+                    {((typeof data.teamXps !== 'undefined' && data.teamXps !== null)
+                      ? Math.round(data.teamXps).toLocaleString()
+                      : (typeof data.teamHealthScore !== 'undefined' && data.teamHealthScore !== null ? Math.round(data.teamHealthScore) : 0).toLocaleString()
+                    )}
+                  </span>
+                </div>
             </motion.div>
 
             {/* Participation Rate */}
@@ -132,30 +126,6 @@ const ManagerOverview = () => {
                   {data.participationChange >= 0 ? '+' : ''}{data.participationChange}%
                 </span>
                 <span className="text-xs text-muted-foreground">vs. previous period</span>
-              </div>
-            </motion.div>
-
-            {/* Points Budget */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="p-5 rounded-xl glass-card border border-border/50"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs text-muted-foreground uppercase tracking-wider">Points Budget</span>
-                <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
-                  <Gift className="w-4 h-4 text-accent" />
-                </div>
-              </div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-bold text-foreground" style={{ fontFamily: "'Sora', sans-serif" }}>{data.pointsBudget.toLocaleString()}</span>
-              </div>
-              <div className="flex items-center gap-2 mt-2">
-                <div className="px-2 py-0.5 rounded bg-secondary/20 text-secondary text-xs font-medium">
-                  {data.pointsRemaining} pts
-                </div>
-                <span className="text-xs text-muted-foreground">remaining this month</span>
               </div>
             </motion.div>
           </div>
@@ -227,7 +197,7 @@ const ManagerOverview = () => {
           </motion.div>
 
           {/* Bottom Cards Row */}
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-1 gap-4">
             {/* Top Performers */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -258,7 +228,7 @@ const ManagerOverview = () => {
                       <p className="text-xs text-muted-foreground">{performer.dept}</p>
                     </div>
                     <div className="px-2 py-1 rounded bg-accent/20 text-accent text-xs font-bold">
-                      {(performer.xp / 1000).toFixed(0)}K XP
+                      80 XP
                     </div>
                   </div>
                 ))}
@@ -266,71 +236,12 @@ const ManagerOverview = () => {
             </motion.div>
 
             {/* Attention Needed */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="p-5 rounded-xl glass-card border border-border/50"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5 text-destructive" />
-                  <span className="font-semibold text-foreground uppercase text-sm tracking-wide">Attention Needed</span>
-                </div>
-                <button className="text-xs text-primary hover:underline">View All</button>
-              </div>
-              <div className="space-y-3">
-                {data.attentionNeeded.map((agent, idx) => (
-                  <div key={idx} className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
-                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-bold text-sm">
-                      {agent.name.split(" ").map((n) => n[0]).join("")}
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-foreground text-sm">{agent.name}</p>
-                      <p className="text-xs text-destructive flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-destructive" />
-                        {agent.issue}
-                      </p>
-                    </div>
-                    <button className="px-3 py-1.5 rounded-lg bg-primary/20 text-primary text-xs font-medium hover:bg-primary/30 transition-colors capitalize">
-                      {agent.type}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+            
           </div>
         </div>
 
         {/* Right Column - Actions & Feed */}
         <div className="space-y-6">
-          {/* Quick Actions */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
-          >
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Quick Actions</h3>
-            <div className="grid grid-cols-2 gap-3">
-              <button className="p-4 rounded-xl glass-card border border-border/50 hover:border-primary/50 transition-colors text-center group">
-                <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
-                  <Zap className="w-5 h-5 text-primary" />
-                </div>
-                <span className="text-sm font-medium text-foreground">Launch Contest</span>
-              </button>
-              <button className="p-4 rounded-xl glass-card border border-border/50 hover:border-success/50 transition-colors text-center group">
-                <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-success/20 flex items-center justify-center group-hover:bg-success/30 transition-colors">
-                  <MessageSquare className="w-5 h-5 text-success" />
-                </div>
-                <span className="text-sm font-medium text-foreground">Send Cheers</span>
-              </button>
-            </div>
-            <button className="w-full p-4 rounded-xl glass-card border border-border/50 hover:border-secondary/50 transition-colors flex items-center justify-center gap-2 group">
-              <Trophy className="w-5 h-5 text-secondary" />
-              <span className="text-sm font-medium text-foreground">Create Task</span>
-            </button>
-          </motion.div>
-
           {/* Live Feed */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
@@ -343,23 +254,57 @@ const ManagerOverview = () => {
               <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
             </div>
             <div className="space-y-3">
-              {data.liveFeed.map((item, idx) => (
-                <div key={idx} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
-                    {item.name[0]}
+              {(data.teamRewards && data.teamRewards.length ? data.teamRewards : data.liveFeed).map((item, idx) => {
+                const rewardsList = ['Sipper', 'Headset', 'Bonus XPS', 'Bonus Points', 'Coffee Mug', 'T-Shirt', 'Cheers', 'Laptop Bag', 'Hoodie'];
+                const displayReward = rewardsList[idx % rewardsList.length];
+                return (
+                  <div key={idx} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
+                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
+                      {item.name ? item.name[0] : (item.agent || 'G')[0]}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-foreground">
+                        <span className="font-medium">{item.name || item.agent}</span>{" "}
+                        <span className="text-muted-foreground">won</span>{" "}
+                        <span className="text-primary font-medium">{displayReward}</span>
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{item.time || item.date || 'just now'} • {item.context || item.dept || 'Team'}</p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm text-foreground">
-                      <span className="font-medium">{item.name}</span>{" "}
-                      <span className="text-muted-foreground">{item.action}</span>{" "}
-                      {item.value && <span className="text-primary font-medium">{item.value}</span>}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{item.time} • {item.dept}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </motion.div>
+
+            {/* Team Rewards Feed */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.15 }}
+              className="space-y-4"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Team Rewards</h3>
+                <button className="text-xs text-primary hover:underline">View All</button>
+              </div>
+              <div className="space-y-3">
+                {((data.teamRewards && data.teamRewards.length) ? data.teamRewards : [
+                  { name: 'Nitha Thatikonda', reward: 'Headset', time: '2h ago', context: 'Q1 Drive' },
+                  { name: 'Ravi Kumar', reward: 'Sipper', time: '1d ago', context: 'Daily Spins' },
+                  { name: 'Anita Sharma', reward: 'Cheers', time: '3d ago', context: 'Monthly Sprint' }
+                ]).map((r, idx) => (
+                  <div key={idx} className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center text-white font-bold text-sm">
+                      {r.name.split(' ').map(n=>n[0]).join('')}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-foreground"><span className="font-medium">{r.name}</span> <span className="text-muted-foreground">won</span> <span className="text-primary font-semibold">{r.reward}</span></p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{r.time} • {r.context}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
 
           {/* Manager Insight */}
           <motion.div

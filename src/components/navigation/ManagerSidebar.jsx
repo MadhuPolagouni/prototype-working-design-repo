@@ -15,10 +15,9 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
   { path: "/manager", icon: LayoutDashboard, label: "Overview", end: true },
-  { path: "/manager/performance", icon: BarChart3, label: "Team Performance" },
+  { path: "/manager/leaderboard", icon: BarChart3, label: "Leaderboard" },
   { path: "/manager/contests", icon: Zap, label: "Contests" },
-  { path: "/manager/rewards", icon: Gift, label: "Rewards Audit" },
-  { path: "/manager/reports", icon: FileText, label: "Reports" },
+  { path: "/manager/rewards", icon: Gift, label: "Rewards" },
 ];
 
 export const SIDEBAR_COLLAPSED_WIDTH = 64;

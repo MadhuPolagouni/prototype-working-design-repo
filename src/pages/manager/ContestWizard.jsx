@@ -307,23 +307,23 @@ const ContestWizard = () => {
       case 4:
         return (
           <div className="space-y-6">
-            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Start Date</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Start Date & Time</label>
                 <input
-                  type="date"
+                  type="datetime-local"
                   value={formData.startDate}
                   onChange={(e) => updateFormData("startDate", e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-muted/30 border border-border/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="w-full px-4 py-3 rounded-xl bg-muted/30 border border-border/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-base"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">End Date</label>
+                <label className="block text-sm font-medium text-foreground mb-2">End Date & Time</label>
                 <input
-                  type="date"
+                  type="datetime-local"
                   value={formData.endDate}
                   onChange={(e) => updateFormData("endDate", e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-muted/30 border border-border/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="w-full px-4 py-3 rounded-xl bg-muted/30 border border-border/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 text-base"
                 />
               </div>
             </div>
@@ -432,8 +432,51 @@ const ContestWizard = () => {
         return (
           <div className="space-y-6">
             <div className="p-6 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/30">
-              <h3 className="text-lg font-bold text-foreground mb-4">Contest Summary</h3>
-              <div className="grid sm:grid-cols-2 gap-4">
+              <h3 className="text-lg font-bold text-foreground mb-6">Contest Summary</h3>
+              
+              {/* Qualifiers Summary */}
+              <div className="mb-6">
+                <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                  <Target className="w-4 h-4 text-primary" />
+                  Qualifiers Summary
+                </h4>
+                <div className="space-y-2">
+                  {formData.selectedMetrics.length > 0 ? (
+                    <div className="p-3 rounded-lg bg-muted/20 border border-border/50">
+                      <p className="text-sm text-muted-foreground mb-1">Metrics:</p>
+                      <p className="text-foreground font-medium">{formData.selectedMetrics.join(", ")}</p>
+                      <p className="text-sm text-muted-foreground mt-2">Target: {formData.targetValue} {metrics.find(m => m.id === formData.selectedMetrics[0])?.unit || "units"}</p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No qualifiers selected</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Rewards Summary */}
+              <div className="mb-6">
+                <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                  <Gift className="w-4 h-4 text-accent" />
+                  Rewards Summary
+                </h4>
+                <div className="space-y-2">
+                  {formData.rewards && formData.rewards.length > 0 ? (
+                    formData.rewards.map((reward, idx) => (
+                      <div key={idx} className="p-3 rounded-lg bg-muted/20 border border-border/50 flex justify-between items-center">
+                        <div>
+                          <p className="text-sm text-muted-foreground">Position {idx + 1}</p>
+                          <p className="text-foreground font-medium">{reward.value || "Not set"} {reward.type === "points" ? "points" : ""}</p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No rewards configured</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Other Details */}
+              <div className="grid sm:grid-cols-2 gap-4 pt-6 border-t border-border/50">
                 <div>
                   <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Name</p>
                   <p className="font-medium text-foreground">{formData.contestName || "Untitled Contest"}</p>
@@ -449,10 +492,6 @@ const ContestWizard = () => {
                 <div>
                   <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Participants</p>
                   <p className="font-medium text-foreground">{formData.participants.length} agents</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Metrics</p>
-                  <p className="font-medium text-foreground">{formData.selectedMetrics.join(", ") || "None"}</p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Budget</p>
